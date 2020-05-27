@@ -1,32 +1,27 @@
 package fundamentalProcess;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Matrix {
-	public static double[][] debugMatrix = { { 1, 3, 5, 1 }, { 1, 0, 4, 67 }, { 1, 4, 4, 6 } };
+	public static double[][] debugMatrix = { { 1, 3, 5,0 }, { 1, 0, 4,20 }, { 1, 4, 4,3 },{ 1, 3, 5,2 } };
 	public double[][] reduced;
 	public double[][] mainMatrix;
 	public double row;
 	public double col;
 
-//	public static void main(String args[]) {
-//
-//		row = mainMatrix.length;
-//		col = mainMatrix[0].length;
-//		rowEchelonForm();
-//		//System.out.println("FINAL OUTPUT");
-//		//printMatrix(reduced);
-//		rowReducedForm();
-//
-//	}
+	public static void main(String args[]) {
+
+		printMatrix(debugMatrix);
+		findDeterminant(debugMatrix);
+	}
 
 	public Matrix(int row, int col) {
-
 
 		this.row = row;
 		this.col = col;
 		mainMatrix = new double[row][col];
-		System.out.println("INSERT FOR DIM "+row+" x "+col);
+		System.out.println("INSERT FOR DIM " + row + " x " + col);
 		readInput();
 	}
 
@@ -75,7 +70,7 @@ public class Matrix {
 		}
 	}
 
-	public void printMatrix(double[][] inputMatrix) {
+	public static void printMatrix(double[][] inputMatrix) {
 
 		for (int row = 0; row < inputMatrix.length; row++) {
 
@@ -206,6 +201,54 @@ public class Matrix {
 //		System.out.println("ROW REDUCED FORM");
 //		printMatrix(reduced);
 
+	}
+
+	public static void findDeterminant(double[][] debugMatrix) {
+		ArrayList<Double> coFactors = new ArrayList<Double>();
+		for (int row = 0; row < debugMatrix.length; row++) {
+			for (int col = 0; col < debugMatrix[0].length; col++) {
+				coFactors.add(debugMatrix[row][col]);
+			}
+		}
+		double result = coFactorDeterminant(coFactors);
+		System.out.println("FINAL RESULT " + result);
+	}
+
+	private static double coFactorDeterminant(ArrayList<Double> list) {
+		int matrixSize = (int) Math.sqrt(list.size());
+		// System.out.println("matrix size " + matrixSize);
+		if (matrixSize == 2) {
+			// System.out.println("list values " + list);
+			return list.get(0) * list.get(3) - list.get(1) * list.get(2);
+		}
+		double dit = 0;
+		for (int baseIndex = 0; baseIndex < matrixSize; baseIndex++) {
+			ArrayList<Double> remainFact = new ArrayList<Double>();
+
+			double piv = list.get(baseIndex);
+			// System.out.println("PIVOTS " + piv + " MATRIX SIZE " + matrixSize +
+			// "\tbaseIndex " + baseIndex);
+
+			double multVal = piv;
+			if (baseIndex % 2 != 0) {
+				multVal = multVal * -1;
+			}
+			// System.out.println("index begin " + baseIndex * matrixSize);
+			// remainFact.clear();
+			for (int index = (int) (matrixSize); index < list.size(); index++) {
+				// System.out.println(index);
+
+				if ((index - baseIndex) % matrixSize != 0) {
+					remainFact.add(list.get(index));
+				}
+			}
+			// System.out.println("added values" + remainFact);
+			double combo = multVal * coFactorDeterminant(remainFact);
+			// System.out.println(combo);
+			dit = dit + combo;
+
+		}
+		return dit;
 	}
 
 	private void swapRows(int row1, int row2) {

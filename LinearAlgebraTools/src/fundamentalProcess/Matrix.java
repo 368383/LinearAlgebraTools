@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Matrix {
-	public static double[][] debugMatrix = { { 1, 3, 5,0 }, { 1, 0, 4,20 }, { 1, 4, 4,3 },{ 1, 3, 5,2 } };
+	public static double[][] debugMatrix = { { 1, 3, 5, 0 }, { 1, 0, 4, 20 }, { 1, 4, 4, 3 }, { 1, 3, 5, 2 } };
 	public double[][] reduced;
 	public double[][] mainMatrix;
 	public double row;
 	public double col;
 
-	public static void main(String args[]) {
-
-		printMatrix(debugMatrix);
-		findDeterminant(debugMatrix);
-	}
+//	public static void main(String args[]) {
+//
+//		printMatrix(debugMatrix);
+//		findDeterminant(debugMatrix);
+//	}
 
 	public Matrix(int row, int col) {
 
@@ -203,7 +203,8 @@ public class Matrix {
 
 	}
 
-	public static void findDeterminant(double[][] debugMatrix) {
+	public void findDeterminant(double[][] debugMatrix) {
+
 		ArrayList<Double> coFactors = new ArrayList<Double>();
 		for (int row = 0; row < debugMatrix.length; row++) {
 			for (int col = 0; col < debugMatrix[0].length; col++) {
@@ -211,10 +212,9 @@ public class Matrix {
 			}
 		}
 		double result = coFactorDeterminant(coFactors);
-		System.out.println("FINAL RESULT " + result);
 	}
 
-	private static double coFactorDeterminant(ArrayList<Double> list) {
+	private double coFactorDeterminant(ArrayList<Double> list) {
 		int matrixSize = (int) Math.sqrt(list.size());
 		// System.out.println("matrix size " + matrixSize);
 		if (matrixSize == 2) {

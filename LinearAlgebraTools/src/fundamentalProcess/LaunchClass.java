@@ -9,6 +9,7 @@ public class LaunchClass {
 		alpha.rowEchelonForm();
 		alpha.rowReducedForm();
 		alpha.printReducedMatrix();
+		System.out.println();
 	}
 
 }

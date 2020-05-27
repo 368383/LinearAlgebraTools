@@ -4,12 +4,10 @@ public class LaunchClass {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Matrix alpha = new Matrix(2, 2);
-		alpha.printMainMatrix();
-		alpha.rowEchelonForm();
-		alpha.rowReducedForm();
-		alpha.printReducedMatrix();
-		//https://github.com/368383/LinearAlgebraTools.git
+		double[][] debugMatrix = { { 1, 3, 5 }, { 1, 0, 4 }, { 1, 4, 4 } };
+		Matrix alpha = new Matrix(debugMatrix);
+		alpha.printMatrix(alpha.findInverse(debugMatrix));
+		
 	}
 
 }

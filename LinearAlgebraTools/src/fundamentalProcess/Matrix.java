@@ -3,27 +3,30 @@ package fundamentalProcess;
 import java.util.Scanner;
 
 public class Matrix {
+	public static double[][] debugMatrix = { { 1, 3, 5, 1 }, { 1, 0, 4, 67 }, { 1, 4, 4, 6 } };
+	public double[][] reduced;
 	public double[][] mainMatrix;
-	public static double[][] reduced;
-	public static double[][] testMatrix = { { 1, 3, 5, 1 }, { 1, 0, 4, 67 }, { 1, 4, 4, 6 } };
-	public static double row;
-	public static double col;
+	public double row;
+	public double col;
 
-	public static void main(String args[]) {
-		row = testMatrix.length;
-		col = testMatrix[0].length;
-		rowEchelonForm();
-		System.out.println("FINAL OUTPUT");
-		printMatrix(reduced);
-		rowReducedForm();
-
-	}
+//	public static void main(String args[]) {
+//
+//		row = mainMatrix.length;
+//		col = mainMatrix[0].length;
+//		rowEchelonForm();
+//		//System.out.println("FINAL OUTPUT");
+//		//printMatrix(reduced);
+//		rowReducedForm();
+//
+//	}
 
 	public Matrix(int row, int col) {
+
 
 		this.row = row;
 		this.col = col;
 		mainMatrix = new double[row][col];
+		System.out.println("INSERT FOR DIM "+row+" x "+col);
 		readInput();
 	}
 
@@ -39,24 +42,17 @@ public class Matrix {
 		sc.close();
 	}
 
-	public static void rowEchForm() {
-		int row = 0;
-		int col = 0;
-		while (true) {
-
-		}
-	}
-
 	public double[][] getReducedMatrix() {
 		return reduced;
 	}
 
 	public double[][] getMainMatrix() {
-		return mainMatrix;
+		return debugMatrix;
 	}
 
-	public void printMatrix() {
+	public void printMainMatrix() {
 
+		System.out.println("Main Matrix Values");
 		for (int row = 0; row < mainMatrix.length; row++) {
 			System.out.print("[ ");
 			for (int col = 0; col < mainMatrix[row].length; col++) {
@@ -67,7 +63,19 @@ public class Matrix {
 		}
 	}
 
-	public static void printMatrix(double[][] inputMatrix) {
+	public void printReducedMatrix() {
+		System.out.println("Reduced Matrix Values");
+		for (int row = 0; row < reduced.length; row++) {
+			System.out.print("[ ");
+			for (int col = 0; col < reduced[row].length; col++) {
+				System.out.print(reduced[row][col] + " ");
+			}
+			System.out.print("]");
+			System.out.println();
+		}
+	}
+
+	public void printMatrix(double[][] inputMatrix) {
 
 		for (int row = 0; row < inputMatrix.length; row++) {
 
@@ -80,7 +88,7 @@ public class Matrix {
 		}
 	}
 
-	public static void printMatrix(double[] inputMatrix) {
+	public void printMatrix(double[] inputMatrix) {
 
 		System.out.print("[ ");
 		for (int col = 0; col < inputMatrix.length; col++) {
@@ -91,14 +99,14 @@ public class Matrix {
 
 	}
 
-	public static void rowEchelonForm() {
+	public void rowEchelonForm() {
 
-		System.out.println("BEFORE CALCULATIONS");
-		reduced = testMatrix.clone();
-		printMatrix(reduced);
+		// System.out.println("BEFORE CALCULATIONS");
+		reduced = mainMatrix.clone();
+		// printMatrix(reduced);
 
 		for (int baseColPos = 0; baseColPos < reduced[0].length; baseColPos++) {
-			System.out.println("CYCLE " + baseColPos + "____________________________");
+			// System.out.println("CYCLE " + baseColPos + "____________________________");
 			int baseRowPos = baseColPos;
 			// ROW REDUCTION PORTION
 
@@ -110,7 +118,7 @@ public class Matrix {
 			for (int row = baseRowPos + 1; row < reduced.length; row++) {
 
 				for (int modifyCol = baseColPos; modifyCol < reduced[0].length; modifyCol++) {
-					System.out.println("MODIFY COL " + row + "\t" + modifyCol);
+					// System.out.println("MODIFY COL " + row + "\t" + modifyCol);
 					if (reduced[baseRowPos][modifyCol] == 0) {
 						baseColPos++;
 						if (baseColPos >= reduced[0].length) {
@@ -128,16 +136,18 @@ public class Matrix {
 				}
 				double scaleFactor = (double) reduced[row][baseColPos] / (reduced[baseRowPos][baseColPos]);
 				if (Double.isNaN(scaleFactor) || Double.isInfinite(scaleFactor)) {
-					System.out
-							.println("ROW " + row + "\t" + baseColPos + " BASE ROW " + baseRowPos + "\t" + baseColPos);
-					System.out.println("INVALID");
+//					System.out
+//							.println("ROW " + row + "\t" + baseColPos + " BASE ROW " + baseRowPos + "\t" + baseColPos);
+//					System.out.println("INVALID");
 					continue;
 				}
-				System.out.println("SCALED FACTOR " + scaleFactor);
+				// System.out.println("SCALED FACTOR " + scaleFactor);
 				for (int col = 0; col < reduced[0].length; col++) {
-					System.out.println("ROW " + row + "\t" + col + " BASE ROW " + baseRowPos + "\t" + col);
+					// System.out.println("ROW " + row + "\t" + col + " BASE ROW " + baseRowPos +
+					// "\t" + col);
 					reduced[row][col] = reduced[row][col] - reduced[baseRowPos][col] * scaleFactor;
 				}
+
 			}
 
 			// FORMAT PORTION
@@ -156,37 +166,55 @@ public class Matrix {
 					}
 				}
 			}
-			printMatrix(reduced);
+			// printMatrix(reduced);
 		}
+//		System.out.println("ROW ECHELON FORM");
+//		printMatrix(reduced);
 
 	}
 
-	public static void rowReducedForm() {
-		int baseCol = 0;
+	public void rowReducedForm() {
+
+		int baseCol = reduced[0].length - 1;
 		int baseRow = 0;
-		boolean found = false;
-		for (int row = reduced.length - 1; row >= 0; row--) {
-			if (found) {
-				break;
-			}
-			for (int col = reduced[0].length - 1; col >= 0; col--) {
-				if (reduced[row][col] == 1) {
-					baseCol = col;
-					baseRow = row;
-					found = true;
+		int baseColIndex = baseCol;
+		for (int pivSearchRow = reduced.length - 1; pivSearchRow >= 1; pivSearchRow--) {
+			// System.out.println("CYCLE " + (reduced.length - pivSearchRow) +
+			// "_________________");
+			for (int pivSearchCol = baseColIndex; pivSearchCol >= 0; pivSearchCol--) {
+//				System.out.println(
+//						pivSearchRow + "\t" + pivSearchCol + "\t test value " + reduced[pivSearchRow][pivSearchCol]);
+
+				if (reduced[pivSearchRow][pivSearchCol] == 1) {
+					baseCol = pivSearchCol;
+					baseRow = pivSearchRow;
+					// System.out.println("PIVOT COORDINATES " + baseCol + "\t " + baseRow);
+					baseColIndex = baseCol - 1;
+					break;
 				}
 			}
+			for (int row = baseRow; row >= 1; row--) {
+				double scaleFactor = -1 * reduced[row - 1][baseCol] / reduced[baseRow][baseCol];
+				// System.out.println("row and col " + row + "\t" + baseCol + " Scale Factor " +
+				// scaleFactor);
+				for (int col = 0; col < reduced[0].length; col++) {
+					reduced[row - 1][col] = reduced[baseRow][col] * scaleFactor + reduced[row - 1][col];
+				}
+			}
+
 		}
-		System.out.println("baseCol and Base Row " + baseCol + "\t" + baseRow);
+//		System.out.println("ROW REDUCED FORM");
+//		printMatrix(reduced);
+
 	}
 
-	private static void swapRows(int row1, int row2) {
+	private void swapRows(int row1, int row2) {
 		double[] holder = reduced[row2];
 		reduced[row2] = reduced[row1];
 		reduced[row1] = holder;
 	}
 
-	private static void findAndScaleRow(double[] input) {
+	private void findAndScaleRow(double[] input) {
 		double scaleValue = 1;
 		for (int i = 0; i < input.length; i++) {
 			if (input[i] != 0.0) {
@@ -200,7 +228,7 @@ public class Matrix {
 
 	}
 
-	private static double[] scaleToPivot(double[] input, int beginIndex) {
+	private double[] scaleToPivot(double[] input, int beginIndex) {
 
 		if (input[beginIndex] == 0) {
 			// System.out.println("UNABLE TO SCALE FACTOR");
@@ -213,7 +241,7 @@ public class Matrix {
 		return input;
 	}
 
-	private static boolean isPivot(double input) {
+	private boolean isPivot(double input) {
 		return input == 1;
 	}
 }

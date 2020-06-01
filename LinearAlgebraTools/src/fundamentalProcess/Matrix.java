@@ -117,7 +117,7 @@ public class Matrix {
 
 	public double[][] findInverse(double[][] inputMatrix) {
 		if (inputMatrix.length != inputMatrix[0].length) {
-			System.out.println("Dimension are not suitable to be inverted");
+			System.out.println("Dimensions are not suitable to be inverted");
 		}
 		int pivOffSet = 0;
 		double[][] reductionMatrix = new double[inputMatrix.length][inputMatrix[0].length * 2];
@@ -128,15 +128,16 @@ public class Matrix {
 			reductionMatrix[row][inputMatrix[0].length + pivOffSet] = 1;
 			pivOffSet++;
 		}
-		//System.out.println("Set of Matrix");
+		// System.out.println("Set of Matrix");
 
-		//printMatrix(reductionMatrix);
+		// printMatrix(reductionMatrix);
 		double[][] alpha = rowReducedForm(reductionMatrix);
-		//printMatrix(alpha);
+		// printMatrix(alpha);
 		// System.out.println("alpha length/2 " + alpha.length);
 		for (int row = 0; row < alpha.length; row++) {
 			for (int col = alpha[0].length / 2; col < alpha[0].length; col++) {
-			//	System.out.println(alpha[row][col] + " Coordinates (" + row + "," + col + ")");
+				// System.out.println(alpha[row][col] + " Coordinates (" + row + "," + col +
+				// ")");
 				inputMatrix[row][col - alpha[0].length / 2] = alpha[row][col];
 			}
 		}
@@ -241,15 +242,15 @@ public class Matrix {
 
 	}
 
-	public void findDeterminant(double[][] debugMatrix) {
+	public double getDeterminant(double[][] inputMatrix) {
 
 		ArrayList<Double> coFactors = new ArrayList<Double>();
-		for (int row = 0; row < debugMatrix.length; row++) {
-			for (int col = 0; col < debugMatrix[0].length; col++) {
-				coFactors.add(debugMatrix[row][col]);
+		for (int row = 0; row < inputMatrix.length; row++) {
+			for (int col = 0; col < inputMatrix[0].length; col++) {
+				coFactors.add(inputMatrix[row][col]);
 			}
 		}
-		double result = coFactorDeterminant(coFactors);
+		return coFactorDeterminant(coFactors);
 	}
 
 	private double coFactorDeterminant(ArrayList<Double> list) {
@@ -284,6 +285,191 @@ public class Matrix {
 			double combo = multVal * coFactorDeterminant(remainFact);
 			// System.out.println(combo);
 			dit = dit + combo;
+
+		}
+		return dit;
+	}
+
+	private String findDeterminantString(String[][] debugMatrix) {
+		if (debugMatrix.length != debugMatrix[0].length) {
+			System.out.println("Invalid dimensions for given operation. Must be Square");
+		}
+		ArrayList<String> coFactors = new ArrayList<String>();
+		for (int row = 0; row < debugMatrix.length; row++) {
+			for (int col = 0; col < debugMatrix[0].length; col++) {
+				coFactors.add((debugMatrix[row][col]));
+			}
+		}
+		return coFactorDeterminantString(coFactors);
+	}
+
+	public void printAnswers(ArrayList<Double> alpha) {
+		System.out.println(alpha);
+	}
+
+	public ArrayList<Double> findEigenVectors(double[][] inputMatrix) {
+		ArrayList<double[][]> vectors = new ArrayList<double[][]>();
+//		double[][] testVector = new double[inputMatrix.length][1];
+//		for (int i = 0; i < testVector.length; i++) {
+//			testVector[i][0] = i + 1;
+//		}
+		double[][] testVector = { { 1 }, { 0 } };
+		vectors.add(testVector);
+		vectors.add(matrixMultiplication(inputMatrix, testVector));
+		// (matrixMultiplication(inputMatrix, testVector));
+		for (int i = 0; i < inputMatrix.length - 1; i++) {
+			double[][] finalMatrix = inputMatrix.clone();
+
+			for (int k = 0; k < i + 1; k++) {
+				finalMatrix = matrixMultiplication(finalMatrix, inputMatrix);
+			}
+			vectors.add(matrixMultiplication(finalMatrix, testVector));
+			// printMatrix(matrixMultiplication(finalMatrix, testVector));
+		}
+		double[][] eigenMatrix = new double[inputMatrix.length][inputMatrix.length + 2];
+		int eigenCol = 0;
+		for (double[][] current : vectors) {
+			for (int row = 0; row < current.length; row++) {
+				eigenMatrix[row][eigenCol] = current[row][0];
+			}
+			eigenCol++;
+		}
+		// printMatrix(eigenMatrix);
+		// System.out.println("FINAL");
+		eigenMatrix = rowReducedForm(eigenMatrix);
+		ArrayList<double[][]> matricies = solveReductionMatrix(eigenMatrix);
+		ArrayList<Double> listOfCoefficients = new ArrayList<Double>();
+		listOfCoefficients.add((double) 1);
+
+		for (double[][] current : matricies) {
+			for (int i = current.length - 2; i >= 0; i--) {
+				listOfCoefficients.add(current[i][0]);
+			}
+		}
+		System.out.println(listOfCoefficients);
+		ArrayList<Double> answers = EquationSolver.solveEquation(listOfCoefficients);
+		return answers;
+	}
+
+	public void solveEquationMatrix(double[][] matrix) {
+		System.out.println(
+				"NOTE, IF MATRIX IS ORIGINAL, THEN THERE ARE NO FREE VARS AND THUS ALL VARS HAVE ANS. OTHERWISE, FREE VARS EXIST AND THE LAST ELEMENT IN THE MATRICIES REPRESENT THE FREE VAR");
+		ArrayList<double[][]> ans = solveReductionMatrix(matrix);
+		for (double[][] currentMatrix : ans) {
+			printMatrix(currentMatrix);
+		}
+	}
+
+	private ArrayList<double[][]> solveReductionMatrix(double[][] matrix) {
+		// determine pivot indexes
+		ArrayList<Integer> listOfPivots = new ArrayList<Integer>();
+		for (int row = 0; row < matrix.length; row++) {
+			for (int col = 0; col < matrix[0].length; col++) {
+				if (matrix[row][col] == 1) {
+
+					listOfPivots.add(col);
+					break;
+				}
+			}
+		}
+		ArrayList<Integer> listOfPotentialPivots = new ArrayList<Integer>();
+		for (int i = 0; i < matrix[0].length - 1; i++) {
+			listOfPotentialPivots.add(i);
+		}
+		for (Integer currentPivot : listOfPivots) {
+			if (listOfPotentialPivots.contains(currentPivot)) {
+				listOfPotentialPivots.remove(currentPivot);
+			}
+		}
+		ArrayList<double[][]> listOfFreeMatrix = new ArrayList<double[][]>();
+
+		if (listOfPotentialPivots.size() == 0) {
+			listOfFreeMatrix.add(matrix);
+			return listOfFreeMatrix;
+		}
+		// System.out.println("HEI");
+		for (Integer currentPiv : listOfPotentialPivots) {
+			// System.out.println("PIVOT "+currentPiv);
+			double[][] freeVarMatrix = new double[matrix.length + 1][1];
+			for (int row = 0; row < freeVarMatrix.length - 1; row++) {
+				freeVarMatrix[row][0] = -1 * matrix[row][currentPiv];
+			}
+			freeVarMatrix[matrix.length][0] = currentPiv;
+			listOfFreeMatrix.add(freeVarMatrix);
+		}
+		return listOfFreeMatrix;
+
+	}
+
+	public double[][] matrixMultiplication(double[][] first, double[][] second) {
+		if (first[0].length != second.length) {
+			System.out.println("INVALID DIM");
+		}
+		// printMatrix(first);
+		// printMatrix(second);
+		double[][] result = new double[first.length][second[0].length];
+		for (int row = 0; row < result.length; row++) {
+			int resultCol = 0;
+			/// System.out.println("CYCLE " + row);
+			for (int secCol = 0; secCol < second[0].length; secCol++) {
+				double plug = 0;
+				for (int col = 0; col < result[0].length; col++) {
+					plug = plug + first[row][col] * second[col][secCol];
+				}
+				result[row][resultCol] = plug;
+				resultCol++;
+			}
+		}
+		return result;
+
+	}
+
+	public String getCharacteristicEquation(double[][] inputMatrix) {
+		String[][] stringMatrix = new String[inputMatrix.length][inputMatrix[0].length];
+		for (int row = 0; row < inputMatrix.length; row++) {
+			for (int col = 0; col < inputMatrix[0].length; col++) {
+				if (row == col) {
+					stringMatrix[row][col] = "(" + Double.toString(inputMatrix[row][col]) + "-x)";
+				} else {
+					stringMatrix[row][col] = Double.toString(inputMatrix[row][col]);
+				}
+			}
+		}
+		return findDeterminantString(stringMatrix);
+	}
+
+	private String coFactorDeterminantString(ArrayList<String> list) {
+		int matrixSize = (int) Math.sqrt(list.size());
+		// System.out.println("matrix size " + matrixSize);
+		if (matrixSize == 2) {
+			// System.out.println("list values " + list);
+			return list.get(0) + "*" + list.get(3) + "-" + list.get(1) + "*" + list.get(2);
+		}
+		String dit = "0";
+		for (int baseIndex = 0; baseIndex < matrixSize; baseIndex++) {
+			ArrayList<String> remainFact = new ArrayList<String>();
+
+			String piv = list.get(baseIndex);
+			// System.out.println("PIVOTS " + piv + " MATRIX SIZE " + matrixSize +
+			// "\tbaseIndex " + baseIndex);
+
+			String multVal = (piv);
+			if (baseIndex % 2 != 0) {
+				multVal = "(-1)*" + multVal;
+			}
+			// System.out.println("index begin " + baseIndex * matrixSize);
+			// remainFact.clear();
+			for (int index = (int) (matrixSize); index < list.size(); index++) {
+				// System.out.println(index);
+
+				if ((index - baseIndex) % matrixSize != 0) {
+					remainFact.add(list.get(index));
+				}
+			}
+			// System.out.println("added values" + remainFact);
+			String combo = (multVal) + "*" + coFactorDeterminantString(remainFact);
+			// System.out.println(combo);
+			dit = dit + "+" + combo;
 
 		}
 		return dit;

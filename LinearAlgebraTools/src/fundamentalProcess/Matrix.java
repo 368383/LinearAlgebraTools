@@ -243,7 +243,10 @@ public class Matrix {
 	}
 
 	public double getDeterminant(double[][] inputMatrix) {
-
+		if (inputMatrix[0].length != inputMatrix.length) {
+			System.out.println("INVALID DIM");
+			return 0;
+		}
 		ArrayList<Double> coFactors = new ArrayList<Double>();
 		for (int row = 0; row < inputMatrix.length; row++) {
 			for (int col = 0; col < inputMatrix[0].length; col++) {
